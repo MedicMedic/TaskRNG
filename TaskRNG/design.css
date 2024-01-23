@@ -1,0 +1,147 @@
+/* Update your CSS file */
+body, html {
+    font-family: Arial, sans-serif;
+    background-color: #fff9b1;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    background-color: #ff28b0;
+    color: #fff;
+    padding: 10px;
+    font-size: xx-large;
+    text-align: center;
+}
+
+
+.task-container {
+    width: 400px;
+    height: 500px;
+    overflow-y: auto;
+    overflow-x:auto;
+    margin: 0 auto;
+    border: 1px solid #ff9acc;
+    text-align: left;
+    background-color: #ffffdf; /* White background color for result log area */
+}
+
+.add-task-row,
+.action-buttons-row {
+    display: flex;
+    justify-content: center; /* Center-align the buttons */
+    margin-bottom: 10px;
+}
+
+.add-task-row label,
+.add-task-row input,
+.add-task-row button,
+.action-buttons-row button,
+.action-buttons-row input {
+    margin-right: 10px;
+}
+
+.task-item {
+    display: flex;
+    padding: 10px;
+    border: 1px solid #ccc;
+    width: 100%;
+    overflow-x: auto;
+    overflow-wrap: break-word;
+    overflow-y: auto;
+    align-items: center;
+}
+
+.task-text-container {
+    flex-grow: 1;
+}
+
+.edit-button,
+.remove-button{
+    margin-left: 5px; /* Add margin between "Remove" button and text */
+    margin-right: 5px; /* Add margin between "Remove" button and text */
+}
+
+.highlighted {
+    background-color: #fffa64; /* Add your preferred highlight color */
+}
+
+.result-log {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #ffffdf; /* White background color for result log area */
+    min-height: 50px; /* Set a minimum height for result log area */
+}
+
+/* Add this to your existing CSS file */
+
+/* Hide the "No file chosen" text for file input */
+input[type="file"] {
+    display: none;
+}
+
+/* Style the custom upload button */
+.upload-button {
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    padding: 10px 15px; /* Padding for better appearance */
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
+/* Style the file input container */
+.file-input-container {
+    display: flex;
+    align-items: center;
+}
+
+/* Add this to your existing CSS file */
+
+/* Button styles */
+button {
+    background-color: #ff9acc; /* Default background color for buttons */
+    color: white; /* White text for better contrast */
+    padding: 10px 15px; /* Padding for better appearance */
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
+/* Randomize button styles */
+#randomize-button {
+    background-color: #ff28b0; /* Pink color for Randomize button */
+    margin-bottom: 5;
+}
+
+/* Style the custom upload button */
+.upload-button {
+    background-color: #eeff00; /* Green background */
+}
+
+/* Style the file input container */
+.file-input-container {
+    display: flex;
+    align-items: center;
+}
+
+/* Add this to your existing CSS file */
+
+/* Style the "Add Task:" label */
+.add-task-row label {
+    display: flex;
+    align-items: center;
+}
+
+/* Adjust the margin to center the text vertically */
+.add-task-row label {
+    margin-bottom: 0;
+}
+.taskadder > button#randomize-button {
+    margin-bottom: 5px;
+}
