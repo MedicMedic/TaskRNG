@@ -145,3 +145,8 @@ button {
 .taskadder > button#randomize-button {
     margin-bottom: 5px;
 }
+
+.task-header
+{
+    font-weight: bold;
+}
