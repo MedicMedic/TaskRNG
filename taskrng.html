@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task RNG</title>
+    <link rel="stylesheet" href="design.css">
+    <script src="task.js" async></script>
+</head>
+<header>
+    <span>Task RNG: Choose a task</span>
+</header>
+<body>
+    <div class="taskheader">
+        <span>Tasks:</span>
+    </div>
+    
+    <div class="task-container" id="tasks-container">
+        <!-- Task items will be added here dynamically -->
+    </div>
+
+    <div class="taskadder">
+        <button id="randomize-button" onclick="randomizeTask()" style="width: 400px;">Randomize</button>
+    
+        <div class="add-task-row">
+            <label>Add Task:</label>
+            <input type="text" id="new-task" placeholder="Enter a task" onkeydown="if (event.key === 'Enter') addTask()">
+            <button onclick="addTask()">Add</button>
+            <button onclick="clearAllTasks()">Clear All</button>
+        </div>
+    
+        <div class="action-buttons-row">
+            <button onclick="saveTasks()">Save</button>
+            <div class="file-input-container">
+                <label for="file-input" class="upload-button">Upload File</label>
+                <input type="file" id="file-input" accept=".txt" onchange="uploadTasks()">
+            </div>
+        </div>
+    </div>
+
+    <div class="result-log" id="result-log"></div>
+</body>
+</html>
