@@ -1,152 +1,233 @@
-/* Update your CSS file */
-body, html {
-    font-family: Arial, sans-serif;
-    background-color: #fff9b1;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    text-align: center;
+/* ── themes ───────────────────────────────────── */
+:root {
+  --paper:   #fff9b1;
+  --paper-2: #ffffdf;
+  --ink:     #2a1820;
+  --ink-soft:#7a5468;
+  --ink-faint: rgba(42,24,32,.16);
+  --accent:  #ff28b0;
+  --accent-ink: #ffffff;
+  --accent-soft: #ff9acc;
+  --gold:    #fffa64;
+  --rule:    rgba(255,40,176,.2);
 }
 
-header {
-    display: flex;
-    flex-direction: column;
-    background-color: #ff28b0;
-    color: #fff;
-    padding: 10px;
-    font-size: xx-large;
-    text-align: center;
+[data-theme="neon"] {
+  --paper:   #1a0612;
+  --paper-2: #260a1d;
+  --ink:     #fff9b1;
+  --ink-soft:#caa5b7;
+  --ink-faint: rgba(255,154,204,.28);
+  --accent:  #ff28b0;
+  --accent-ink: #1a0612;
+  --accent-soft: #ff9acc;
+  --gold:    #fffa64;
+  --rule:    rgba(255,154,204,.2);
 }
 
-
-.task-container {
-    width: 400px;
-    height: 500px;
-    overflow-y: auto;
-    overflow-x:auto;
-    margin: 0 auto;
-    border: 1px solid #ff9acc;
-    text-align: left;
-    background-color: #ffffdf; /* White background color for result log area */
+[data-theme="cotton"] {
+  --paper:   #ffeaf5;
+  --paper-2: #ffffff;
+  --ink:     #2a1820;
+  --ink-soft:#7a5468;
+  --ink-faint: rgba(42,24,32,.16);
+  --accent:  #ff28b0;
+  --accent-ink: #ffffff;
+  --accent-soft: #ff9acc;
+  --gold:    #fffa64;
+  --rule:    rgba(255,40,176,.18);
 }
 
-.add-task-row,
-.action-buttons-row {
-    display: flex;
-    justify-content: center; /* Center-align the buttons */
-    margin-bottom: 10px;
+/* ── base ─────────────────────────────────────── */
+body {
+  background: var(--paper);
+  color: var(--ink);
+  transition: background .25s, color .25s;
 }
 
-.add-task-row label,
-.add-task-row input,
-.add-task-row button,
-.action-buttons-row button,
-.action-buttons-row input {
-    margin-right: 10px;
+/* ── buttons ──────────────────────────────────── */
+.ghost-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--ink-soft);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: inherit;
+  font-family: inherit;
+  font-weight: 500;
+  transition: background .12s, color .12s;
+}
+.ghost-btn:hover { background: var(--paper-2); color: var(--ink); }
+.ghost-btn.danger:hover { color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+
+.theme-btn {
+  border-color: var(--rule);
+  background: var(--paper-2);
+  color: var(--ink-soft);
+  font-family: inherit;
+  cursor: pointer;
+}
+.theme-btn:hover, .theme-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--paper));
 }
 
-.task-item {
-    display: flex;
-    padding: 10px;
-    border: 1px solid #ccc;
-    width: 100%;
-    overflow-x: auto;
-    overflow-wrap: break-word;
-    overflow-y: auto;
-    align-items: center;
+/* ── task row ─────────────────────────────────── */
+.task-row {
+  display: grid;
+  grid-template-columns: 24px 40px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 4px 10px 2px;
+  border-bottom: 1px solid var(--rule);
+  position: relative;
+}
+.task-row:last-child { border-bottom: none; }
+.task-row:hover { background: color-mix(in srgb, var(--paper-2) 55%, transparent); }
+.task-row.is-chosen {
+  background: color-mix(in srgb, var(--gold) 40%, var(--paper-2));
+}
+.task-row.is-done .task-text { text-decoration: line-through; color: var(--ink-soft); }
+.task-row.is-done .task-idx { opacity: .45; }
+
+.task-check {
+  width: 22px; height: 22px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent; border: none; cursor: pointer;
+  color: var(--accent);
+  border-radius: 50%;
+  transition: background .12s;
+  flex-shrink: 0;
+}
+.task-check:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.check-ring {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 1.5px solid var(--ink-faint);
+  transition: border-color .12s;
+}
+.task-check:hover .check-ring { border-color: var(--accent); }
+
+.task-idx {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--ink-soft);
+  text-align: right;
+}
+.task-text {
+  font-size: 14px; color: var(--ink);
+  word-break: break-word;
+  cursor: text;
+  padding: 2px 0;
+}
+.task-edit-input {
+  background: transparent;
+  border: none; border-bottom: 1.5px solid var(--accent);
+  outline: none;
+  font-size: 14px; color: var(--ink);
+  font-family: inherit;
+  padding: 2px 0;
+  width: 100%;
+}
+.task-actions {
+  display: flex; gap: 3px; align-items: center;
+  opacity: 0;
+  transition: opacity .12s;
+}
+.task-row:hover .task-actions,
+.task-row:focus-within .task-actions { opacity: 1; }
+
+.weight-input {
+  width: 40px;
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  padding: 2px 4px;
+  text-align: center;
+  font-size: 12px;
+  background: var(--paper-2);
+  color: var(--ink);
+  font-family: 'JetBrains Mono', monospace;
+  outline: none;
+  transition: border-color .12s;
+}
+.weight-input:focus { border-color: var(--accent); }
+
+.icon-btn {
+  width: 26px; height: 26px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent; border: none; cursor: pointer;
+  color: var(--ink-soft); border-radius: 5px;
+  transition: background .12s, color .12s;
+}
+.icon-btn:hover { background: var(--paper-2); color: var(--ink); }
+
+/* ── roll card animation ──────────────────────── */
+#roll-card {
+  box-shadow: 0 1px 0 rgba(255,255,255,.35) inset, 0 14px 36px -24px rgba(0,0,0,.3);
+  transition: border-color .2s, box-shadow .2s;
+}
+#roll-card.is-rolling { border-color: var(--accent) !important; }
+#roll-card.has-winner {
+  border-color: var(--accent) !important;
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent),
+    0 1px 0 rgba(255,255,255,.35) inset,
+    0 18px 50px -24px rgba(0,0,0,.35);
+}
+#roll-dot { transition: opacity .2s; }
+#roll-card.is-rolling #roll-dot { animation: pulse 1s infinite; }
+
+@keyframes pulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50%      { opacity:.35; transform:scale(.65); }
 }
 
-.task-text-container {
-    flex-grow: 1;
+#roll-text { transition: color .15s; }
+.roll-text-flick { animation: rollFlick .13s cubic-bezier(.2,.7,.3,1) both; }
+.roll-text-reveal { animation: rollReveal .24s cubic-bezier(.2,.7,.3,1) both; }
+
+@keyframes rollFlick {
+  from { opacity:.25; transform: translateY(-3px); }
+  to   { opacity:1;   transform: translateY(0); }
+}
+@keyframes rollReveal {
+  from { opacity:0;   transform: translateY(7px); }
+  to   { opacity:1;   transform: translateY(0); }
 }
 
-.edit-button,
-.remove-button{
-    margin-left: 5px; /* Add margin between "Remove" button and text */
-    margin-right: 5px; /* Add margin between "Remove" button and text */
+.winner-highlight {
+  background: linear-gradient(180deg, transparent 55%, var(--gold) 55%, var(--gold) 92%, transparent 92%);
+  padding: 0 .08em;
 }
 
-.highlighted {
-    background-color: #fffa64; /* Add your preferred highlight color */
+/* ── composer ─────────────────────────────────── */
+#composer-wrap {
+  background: linear-gradient(180deg, transparent 0%, var(--paper) 30%);
+}
+#composer { box-shadow: 0 1px 0 rgba(255,255,255,.4) inset, 0 10px 24px -16px rgba(0,0,0,.25); }
+#composer:focus-within { border-color: var(--ink) !important; }
+#new-task::placeholder { color: var(--ink-soft); opacity: .65; }
+
+/* ── toast ────────────────────────────────────── */
+#toast.show {
+  display: block;
+  animation: toastIn .18s ease-out both;
+}
+@keyframes toastIn {
+  from { opacity:0; transform:translate(-50%, 5px); }
+  to   { opacity:1; transform:translate(-50%, 0); }
 }
 
-.result-log {
-    margin-top: 20px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    background-color: #ffffdf; /* White background color for result log area */
-    min-height: 50px; /* Set a minimum height for result log area */
-}
+/* ── advanced settings accordion ─────────────── */
+.adv-details summary { transition: background .12s; }
+.adv-details summary:hover { background: color-mix(in srgb, var(--accent) 6%, var(--paper-2)) !important; }
+.adv-details[open] .adv-chevron { transform: rotate(180deg); }
+.adv-chevron { display: inline-block; transition: transform .18s; }
+/* hide native webkit disclosure triangle */
+.adv-details > summary::-webkit-details-marker { display: none; }
 
-/* Add this to your existing CSS file */
-
-/* Hide the "No file chosen" text for file input */
-input[type="file"] {
-    display: none;
-}
-
-/* Style the custom upload button */
-.upload-button {
-    background-color: #4CAF50; /* Green background */
-    color: white; /* White text */
-    padding: 10px 15px; /* Padding for better appearance */
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-}
-
-/* Style the file input container */
-.file-input-container {
-    display: flex;
-    align-items: center;
-}
-
-/* Add this to your existing CSS file */
-
-/* Button styles */
-button {
-    background-color: #ff9acc; /* Default background color for buttons */
-    color: white; /* White text for better contrast */
-    padding: 10px 15px; /* Padding for better appearance */
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-}
-
-/* Randomize button styles */
-#randomize-button {
-    background-color: #ff28b0; /* Pink color for Randomize button */
-    margin-bottom: 5;
-}
-
-/* Style the custom upload button */
-.upload-button {
-    background-color: #eeff00; /* Green background */
-}
-
-/* Style the file input container */
-.file-input-container {
-    display: flex;
-    align-items: center;
-}
-
-/* Add this to your existing CSS file */
-
-/* Style the "Add Task:" label */
-.add-task-row label {
-    display: flex;
-    align-items: center;
-}
-
-/* Adjust the margin to center the text vertically */
-.add-task-row label {
-    margin-bottom: 0;
-}
-.taskadder > button#randomize-button {
-    margin-bottom: 5px;
-}
-
-.task-header
-{
-    font-weight: bold;
-}
+/* ── custom scrollbar ─────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--accent-soft); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }

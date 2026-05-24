@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:api.anthropic.com)",
+      "Bash(file webfetch-1779620899960-iw8fj2.bin)",
+      "Bash(python3 -c \"import gzip, os; data=gzip.open\\('webfetch-1779620899960-iw8fj2.bin'\\).read\\(\\); open\\('design_extracted.txt','wb'\\).write\\(data\\)\")",
+      "Bash(python3 -c ' *)",
+      "Bash(python3 -c \"import playwright; print\\('ok'\\)\")",
+      "Bash(npx playwright *)",
+      "Bash(node -e ' *)",
+      "Read(//tmp/**)"
+    ]
+  }
+}

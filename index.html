@@ -1,42 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Task RNG</title>
-    <link rel="stylesheet" href="design.css">
-    <script src="task.js" async></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task RNG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="design.css">
+  <!-- force-generate dynamic Tailwind classes used in JS -->
+  <div class="hidden bg-[#fffa64] border-[#ff28b0] bg-[#ff28b0] text-white border-gray-300 line-through opacity-50 bg-yellow-100"></div>
+  <script src="task.js" defer></script>
 </head>
-<header>
-    <span>Task RNG: Choose a task</span>
-</header>
-<body>
-    <div class="task-header">
-        <span>Tasks:</span>
+<body class="min-h-screen font-['DM_Sans',ui-sans-serif,system-ui]" id="app-body">
+
+  <header class="px-8 py-5 flex items-center justify-between" style="max-width:900px; margin:0 auto;">
+    <div class="flex items-baseline gap-2.5">
+      <span class="text-3xl font-semibold" id="header-title" style="color:var(--ink)">Task</span>
+      <span class="font-['JetBrains_Mono'] text-3xl font-bold px-3 py-1 rounded-lg" style="background:var(--accent);color:var(--accent-ink)">RNG</span>
     </div>
-    
-    <div class="task-container" id="tasks-container">
-        <!-- Task items will be added here dynamically -->
+    <div class="font-['JetBrains_Mono'] text-xs uppercase tracking-widest" style="color:var(--ink-soft)" id="header-counts">0 pending</div>
+  </header>
+
+  <main style="max-width:900px; margin:0 auto;" class="px-6 pb-32 grid grid-cols-[1fr_288px] gap-6 items-start">
+
+    <!-- LEFT: task list -->
+    <div class="flex flex-col gap-3">
+      <div class="flex items-center justify-between pb-2 border-b" style="border-color:var(--rule)">
+        <span class="font-['JetBrains_Mono'] text-[11px] uppercase tracking-widest" style="color:var(--ink-soft)" id="list-label">Tasks · 0</span>
+        <div class="flex gap-3 items-center">
+          <button onclick="toggleHideDone()" id="hide-done-btn" class="ghost-btn text-xs">Hide done</button>
+          <button onclick="exportTasks()" class="ghost-btn text-xs">Export .txt</button>
+          <label for="file-input" class="ghost-btn text-xs cursor-pointer select-none">Import .txt</label>
+          <input type="file" id="file-input" accept=".txt" onchange="uploadTasks()" class="hidden">
+          <button onclick="clearAllTasks()" class="ghost-btn danger text-xs">Clear all</button>
+        </div>
+      </div>
+
+      <ul id="tasks-container" class="flex flex-col"></ul>
+
+      <div id="empty-state" class="text-center py-16" style="color:var(--ink-soft)">
+        <div class="text-5xl mb-3" style="opacity:.18">∅</div>
+        <div class="text-sm">No tasks yet. Add one below.</div>
+      </div>
     </div>
 
-    <div class="taskadder">
-        <button id="randomize-button" onclick="randomizeTask()" style="width: 400px;">Randomize</button>
-    
-        <div class="add-task-row">
-            <label>Add Task:</label>
-            <input type="text" id="new-task" placeholder="Enter a task" onkeydown="if (event.key === 'Enter') addTask()">
-            <button onclick="addTask()">Add</button>
-            <button onclick="clearAllTasks()">Clear All</button>
+    <!-- RIGHT: roll card + settings -->
+    <div class="flex flex-col gap-4">
+
+      <!-- Roll card -->
+      <div id="roll-card" class="rounded-2xl p-7 relative overflow-hidden" style="background:var(--paper-2);border:1px solid var(--rule)">
+        <div class="flex items-center gap-2 mb-4">
+          <span id="roll-dot" class="w-2 h-2 rounded-full" style="background:var(--accent)"></span>
+          <span id="roll-status" class="font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest" style="color:var(--ink-soft)">ready</span>
+          <span id="roll-count" class="ml-auto font-['JetBrains_Mono'] text-[10px] font-semibold px-2 py-0.5 rounded-full border" style="color:var(--ink);border-color:var(--rule);background:var(--paper)">00</span>
         </div>
-    
-        <div class="action-buttons-row">
-            <button onclick="saveTasks()">Save</button>
-            <div class="file-input-container">
-                <label for="file-input" class="upload-button">Upload File</label>
-                <input type="file" id="file-input" accept=".txt" onchange="uploadTasks()">
+
+        <div id="roll-display" class="min-h-[120px] flex items-center justify-center my-2">
+          <span id="roll-text" class="text-2xl font-semibold text-center leading-snug" style="color:var(--ink-soft)">Press Roll to pick</span>
+        </div>
+
+        <div id="roll-actions" class="flex gap-2 flex-wrap mt-4">
+          <button id="roll-btn" onclick="roll()"
+            class="flex-1 flex items-center justify-center gap-2 font-semibold py-3 px-4 rounded-xl text-sm transition-all active:scale-95"
+            style="background:var(--accent);color:var(--accent-ink)">
+            <span>⚄</span><span>Roll</span><span class="font-['JetBrains_Mono'] text-[10px] opacity-60 border rounded px-1" style="border-color:rgba(255,255,255,.3)">Space</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Advanced Settings -->
+      <details class="rounded-2xl overflow-hidden adv-details" style="border:1px solid var(--rule)">
+        <summary class="px-4 py-3 text-xs font-semibold uppercase tracking-widest cursor-pointer select-none flex items-center justify-between" style="background:var(--paper-2);color:var(--ink-soft);border-bottom:1px solid var(--rule);list-style:none">
+          <span>Advanced Settings</span>
+          <span class="adv-chevron" style="font-size:10px">▾</span>
+        </summary>
+        <div class="px-4 py-4 flex flex-col gap-4" style="background:var(--paper)">
+
+          <label class="flex items-center justify-between gap-3 cursor-pointer">
+            <div>
+              <div class="text-sm font-semibold" style="color:var(--ink)">Weighted Randomization</div>
+              <div class="text-xs mt-0.5" style="color:var(--ink-soft)">Higher weight = picked more often</div>
             </div>
+            <input type="checkbox" id="weighted-toggle" onchange="saveSettings()" class="w-4 h-4 cursor-pointer" style="accent-color:var(--accent)">
+          </label>
+
+          <label class="flex items-center justify-between gap-3 cursor-pointer">
+            <div>
+              <div class="text-sm font-semibold" style="color:var(--ink)">Show Weights</div>
+              <div class="text-xs mt-0.5" style="color:var(--ink-soft)">Weight input on each task row</div>
+            </div>
+            <input type="checkbox" id="show-weights" onchange="toggleWeights()" checked class="w-4 h-4 cursor-pointer" style="accent-color:var(--accent)">
+          </label>
+
+          <label class="flex items-center justify-between gap-3">
+            <div>
+              <div class="text-sm font-semibold" style="color:var(--ink)">Default weight</div>
+              <div class="text-xs mt-0.5" style="color:var(--ink-soft)">For newly added tasks</div>
+            </div>
+            <input type="number" id="default-weight" value="1" min="1" max="99" onchange="saveSettings()"
+              class="w-14 border rounded-lg px-2 py-1 text-center text-sm focus:outline-none"
+              style="border-color:var(--rule);background:var(--paper-2);color:var(--ink);accent-color:var(--accent)">
+          </label>
+
+          <label class="flex items-center justify-between gap-3 cursor-pointer">
+            <div>
+              <div class="text-sm font-semibold" style="color:var(--ink)">Animate roll</div>
+              <div class="text-xs mt-0.5" style="color:var(--ink-soft)">Slot-machine spin effect</div>
+            </div>
+            <input type="checkbox" id="animate-toggle" onchange="saveSettings()" checked class="w-4 h-4 cursor-pointer" style="accent-color:var(--accent)">
+          </label>
+
+          <label class="flex items-center justify-between gap-3 cursor-pointer">
+            <div>
+              <div class="text-sm font-semibold" style="color:var(--ink)">Confetti</div>
+              <div class="text-xs mt-0.5" style="color:var(--ink-soft)">Burst on selection</div>
+            </div>
+            <input type="checkbox" id="confetti-toggle" onchange="saveSettings()" checked class="w-4 h-4 cursor-pointer" style="accent-color:var(--accent)">
+          </label>
+
+          <div>
+            <div class="text-sm font-semibold mb-2" style="color:var(--ink)">Theme</div>
+            <div class="flex gap-2 flex-wrap">
+              <button onclick="setTheme('classic')" data-theme="classic" class="theme-btn text-xs px-3 py-1.5 rounded-lg border font-medium transition-colors">Classic</button>
+              <button onclick="setTheme('neon')" data-theme="neon" class="theme-btn text-xs px-3 py-1.5 rounded-lg border font-medium transition-colors">Neon</button>
+              <button onclick="setTheme('cotton')" data-theme="cotton" class="theme-btn text-xs px-3 py-1.5 rounded-lg border font-medium transition-colors">Cotton</button>
+            </div>
+          </div>
+
         </div>
+      </details>
+
+      <p class="text-xs text-center" style="color:var(--ink-soft);opacity:.6">Auto-saved to browser</p>
     </div>
 
-    <div class="result-log" id="result-log"></div>
+  </main>
+
+  <!-- Sticky composer -->
+  <div class="fixed left-0 right-0 bottom-0 z-10 px-4 pb-5 pt-3" id="composer-wrap">
+    <div class="max-w-[900px] mx-auto">
+      <div id="composer" class="flex items-center gap-3 rounded-xl px-4 py-2 shadow-lg" style="background:var(--paper-2);border:1px solid var(--rule)">
+        <span class="text-xl font-semibold select-none" style="color:var(--ink-soft)">+</span>
+        <input type="text" id="new-task" placeholder="Add a task…  (Enter)"
+          class="flex-1 bg-transparent border-none outline-none text-sm py-2"
+          style="color:var(--ink)"
+          onkeydown="if(event.key==='Enter') addTask()">
+        <button onclick="addTask()" id="add-btn"
+          class="text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+          style="background:var(--ink);color:var(--paper)">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 hidden font-['JetBrains_Mono'] text-xs px-4 py-2 rounded-full shadow-lg" style="background:var(--ink);color:var(--paper)"></div>
+
 </body>
 </html>
